@@ -1,4 +1,4 @@
-import { store } from './src/store.js'
+import { store, parsePath } from './src/store.js'
 import { clear } from './src/utils/dom.js'
 import { header, footer } from './src/components/layout.js'
 import { homeView } from './src/views/home.js'
@@ -35,4 +35,14 @@ function render() {
 }
 
 store.subscribe(render)
+
+store.state.route = parsePath(window.location.pathname)
 render()
+
+window.addEventListener('popstate', (e) => {
+  const next = e.state && e.state.name
+    ? { name: e.state.name, params: e.state.params || {} }
+    : parsePath(window.location.pathname)
+  store.state.route = next
+  store.notify()
+})

@@ -55,6 +55,10 @@ export const store = {
   },
   navigate(name, params = {}) {
     this.state.route = { name, params }
+    const path = buildPath(name, params)
+    if (path && window.location.pathname !== path) {
+      window.history.pushState({ name, params }, '', path)
+    }
     this.notify()
     window.scrollTo({ top: 0, behavior: 'smooth' })
   },
@@ -78,4 +82,56 @@ export const store = {
     this.state.user = null
     this.notify()
   },
+}
+
+const routePaths = {
+  home: '/',
+  catalog: '/medicamentos',
+  product: '/producto',
+  cart: '/carrito',
+  checkout: '/pago',
+  confirmation: '/confirmacion',
+  compare: '/comparar',
+  orders: '/pedidos',
+  help: '/ayuda',
+  legal: '/legal',
+  login: '/login',
+  register: '/registro',
+}
+
+export function buildPath(name, params = {}) {
+  const base = routePaths[name]
+  if (!base) return ''
+  if (name === 'product' && params.id) return `${base}/${params.id}`
+  if (name === 'legal' && params.doc) return `${base}/${params.doc}`
+  return base
+}
+
+export function parsePath(pathname) {
+  if (pathname === '/' || pathname === '') return { name: 'home', params: {} }
+  const parts = pathname.replace(/^\//, '').split('/').filter(Boolean)
+  const seg = parts[0]
+  const rest = parts.slice(1)
+  const byPath = {
+    medicamentos: 'catalog',
+    producto: 'product',
+    carrito: 'cart',
+    pago: 'checkout',
+    confirmacion: 'confirmation',
+    comparar: 'compare',
+    pedidos: 'orders',
+    ayuda: 'help',
+    legal: 'legal',
+    login: 'login',
+    registro: 'register',
+  }
+  const name = byPath[seg]
+  if (!name) return { name: 'home', params: {} }
+  if (name === 'product' && rest[0]) return { name, params: { id: rest[0] } }
+  if (name === 'legal' && rest[0]) return { name, params: { doc: rest[0] } }
+  if (name === 'catalog' && rest[0]) {
+    if (rest[0] === 'categoria' && rest[1]) return { name, params: { category: rest[1] } }
+    return { name, params: { query: decodeURIComponent(rest[0]) } }
+  }
+  return { name, params: {} }
 }
