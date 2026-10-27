@@ -24,7 +24,7 @@ export function helpView() {
       el('div', { class: 'help-card farmaco-card' }, [
         el('h3', {}, 'Portal FARMACON'),
         el('p', {}, 'Autoconsulta de información general sobre medicamentos: indicaciones habituales, precauciones e interacciones frecuentes.'),
-        el('span', { class: 'badge badge-info' }, 'Demostración'),
+        el('span', { class: 'badge badge-info' }, ''),
         el('button', { class: 'btn btn-primary btn-sm', onclick: () => { window.location.href = '/autoayuda.html' } }, 'Acceder al portal'),
       ]),
       el('div', { class: 'help-card' }, [
